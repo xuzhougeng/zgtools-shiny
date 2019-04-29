@@ -52,7 +52,8 @@ dashboardbody <- dashboardBody(
                                   actionButton("submit1", label = "Extract")
                                   
               ),
-              shinydashboard::box(htmlOutput ("seqout")
+              shinydashboard::box(textOutput ("seqout"),
+                                  tags$style(type="text/css", "#seqout {white-space: pre-wrap;}")
               )
               
             )), # end of first tabItem
@@ -77,7 +78,8 @@ dashboardbody <- dashboardBody(
                                   actionButton("submit2", label = "Extract")
                                   
               ),
-              shinydashboard::box(htmlOutput ("seqout2")
+              shinydashboard::box(textOutput ("seqout2"),
+                                  tags$style(type="text/css", "#seqout2 {white-space: pre-wrap;}")
               )
               
             )) # end of second tabItem
@@ -183,6 +185,7 @@ server <- function(input, output, session) {
       global_value$ref2,
       global_value$chr2 
     )
+    print(seq_out)
     seq_out
     
   }
