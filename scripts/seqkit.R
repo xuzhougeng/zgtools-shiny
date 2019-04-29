@@ -34,10 +34,13 @@ seqkit_extract_genomic <- function(ref, chr, start, end, ...){
     seq_result <- system(cmd, intern = TRUE)
   } else{
     
-    cmd1 <- sprintf("%s faidx %s %s:%d-%d -o tmp.fa", seqkit_path, ref, chr, end, start)
+    tmp_file <- file.path(tempdir(), "tmp.fa")
+    cmd1 <- sprintf("%s faidx %s %s:%d-%d -o %s", 
+                    seqkit_path, ref, chr, end, start, tmp_file)
     #print(cmd1)
     system(cmd1)
-    cmd2 <- sprintf("%s seq -rp tmp.fa", seqkit_path)
+    
+    cmd2 <- sprintf("%s seq -rp %s", seqkit_path, tmp_file)
     #print(cmd2)
     seq_result <- system(cmd2, intern = TRUE)
     
