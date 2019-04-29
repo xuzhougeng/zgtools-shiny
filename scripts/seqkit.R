@@ -20,7 +20,7 @@ seqkit_get_name <- function(ref){
   
   
   seqkit_path <- set_seqkit_path()
-  cmd <- sprintf("%s seq -n %s", seqkit_path, ref)
+  cmd <- sprintf("%s seq -ni %s", seqkit_path, ref)
   chroms <- system(cmd, intern = TRUE)
   
   return(chroms)
@@ -64,11 +64,15 @@ seqkit_extract_genomic <- function(ref, chr, start, end, ...){
   
 }
 
-seqkit_extract_transcript <- function(ref, id){
+seqkit_extract_by_id <- function(ref, id){
   
   seqkit_path <- set_seqkit_path()
-  cmd <- sprintf("%s faidx %s ", seqkit_path, ref, id)
-  seq_result <- system(cmd)
+  cmd <- sprintf("%s grep -p %s %s", seqkit_path, id, ref)
+  #print(cmd)
+  seq_result <- system(cmd, intern = TRUE)
+  seq <- paste0( seq_result[1], "\n",
+                 paste(seq_result[-1], collapse = ""), collapse = "" )
+  return(seq)
   
 }
 
