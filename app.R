@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+library(rclipboard)
 library(shinydashboard)
 source("scripts/seqkit.R")
 
@@ -49,13 +50,13 @@ dashboardbody <- dashboardBody(
                         
                         numericInput("start", label = "Start", value = 1),
                         numericInput("end", label = "End", value=200),
-                        actionButton("submit1", label = "Extract")
+                        actionButton("submit1", label = "Extract"),
+                        uiOutput("clip")
                         
-                        ),
-    shinydashboard::box(htmlOutput ("seqout")
+                        )
                         )
     
-  )), # end of first tabItem
+  ), # end of first tabItem
   
   
   tabItem(tabName = "byid",
@@ -74,13 +75,15 @@ dashboardbody <- dashboardBody(
                                                )
                                 ),
                                 
-                                actionButton("submit2", label = "Extract")
+                                actionButton("submit2", label = "Extract"),
+                                uiOutput("clip2")
                                 
-            ),
-            shinydashboard::box(htmlOutput ("seqout2")
+            )
+                                
             )
             
-          )) # end of second tabItem
+            
+          ) # end of second tabItem
   
   
   ) # end of tabItems
@@ -106,7 +109,9 @@ server <- function(input, output, session) {
     chr = NULL, # by pos
     chr2 = NULL,  # by id
     start = NULL,
-    end = NULL
+    end = NULL,
+    seq_out = NULL,
+    seq_out2 = NULL
   )
   
   # update the selections for by position
@@ -132,24 +137,36 @@ server <- function(input, output, session) {
     global_value$start <- input$start
     global_value$end <- input$end
     
-  })
-  
-  output$seqout <-  renderText({
     
-    validate(
-      need(! is.null(global_value$ref), "Submit FASTA first" )
-    )
-    seq_out <- seqkit_extract_genomic(
+    global_value$seq_out <- seqkit_extract_genomic(
       global_value$ref,
       global_value$chr,
       global_value$start,
       global_value$end
       
     )
-    seq_out
     
-  }
-  )
+  })
+  
+  # output$seqout <-  renderText({
+  #   
+  #   validate(
+  #     need(! is.null(global_value$ref), "Submit FASTA first" )
+  #   )
+  # 
+  #   global_value$seq_out
+  #   
+  # }
+  # )
+  # Add clipboard buttons
+  output$clip <- renderUI({
+    rclipButton("clipbtn", "Copy", global_value$seq_out, icon("clipboard"))
+  })
+  observeEvent(input$submit,{
+    clipr::write_clip(global_value$seq_out, breaks = "\n")
+  })
+  
+  
   
   
   # update the selection for by ID
@@ -172,21 +189,31 @@ server <- function(input, output, session) {
     global_value$ref2 <- input$seqfile2$datapath
     global_value$chr2 <- input$chr2
     
-  })
-  
-  output$seqout2 <-  renderText({
-    
-    validate(
-      need(! is.null(global_value$ref2), "Submit FASTA first" )
-    )
-    seq_out <- seqkit_extract_by_id(
+    global_value$seq_out2 <- seqkit_extract_by_id(
       global_value$ref2,
       global_value$chr2 
     )
-    seq_out
     
-  }
-  )
+  })
+  
+  # output$seqout2 <-  renderText({
+  #   
+  #   validate(
+  #     need(! is.null(global_value$ref2), "Submit FASTA first" )
+  #   )
+  # 
+  #   global_value$seq_out2 
+  #   
+  # }
+  # )
+  # Add clipboard buttons
+  output$clip2 <- renderUI({
+    rclipButton("clipbtn2", "Copy", global_value$seq_out2, icon("clipboard"))
+  })
+  observeEvent(input$submit2,{
+    clipr::write_clip(global_value$seq_out2, breaks = "\n")
+  })
+  
   
   
 }

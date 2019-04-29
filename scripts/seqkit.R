@@ -56,8 +56,7 @@ seqkit_extract_genomic <- function(ref, chr, start, end, ...){
     seq_result <- system(cmd2, intern = TRUE)
     
   }
-  seq <- paste0( seq_result[1], "\n",
-                 paste(seq_result[-1], collapse = ""), collapse = "" )
+  seq <- paste(seq_result, collapse = "\n")
   #print("\n")
   #print(seq)
   return(seq)
@@ -70,8 +69,7 @@ seqkit_extract_by_id <- function(ref, id){
   cmd <- sprintf("%s grep -p %s %s", seqkit_path, id, ref)
   #print(cmd)
   seq_result <- system(cmd, intern = TRUE)
-  seq <- paste0( seq_result[1], "\n",
-                 paste(seq_result[-1], collapse = ""), collapse = "" )
+  seq <- paste(seq_result, collapse = "\n")
   return(seq)
   
 }
