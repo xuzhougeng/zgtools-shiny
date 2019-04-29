@@ -24,7 +24,18 @@ dashboardbody <- dashboardBody(
   fluidRow(
     
     shinydashboard::box(fileInput("seqfile", label = "Upload FASTA"),
-                        textInput("chr", label = "Chromosome/Contig"),
+                        
+                        selectizeInput("chr",
+                                       label = "Chromosome/Contig",
+                                       choice = NULL,
+                                       multiple = FALSE,
+                                       options = list(
+                                         placeholder = "select chr/contig",
+                                         maxOptions = 20
+                                       )
+                                       ),
+                        
+                        
                         numericInput("start", label = "Start", value = 1),
                         numericInput("end", label = "End", value=200),
                         actionButton("submit1", label = "Extract")
@@ -49,11 +60,28 @@ ui <- dashboardPage(
 server <- function(input, output, session) {
   
   global_value <- reactiveValues(
+    chroms = NULL,
     ref = NULL,
     chr = NULL,
     start = NULL,
     end = NULL
   )
+  
+  # update the selections
+  observeEvent({
+    input$seqfile
+    
+  },{
+    global_value$chroms <- seqkit_get_name(input$seqfile$datapath)
+  })
+  
+  observe({
+    updateSelectizeInput(session,
+                         inputId = "chr",
+                         choices = global_value$chroms,
+                         server = TRUE
+    )
+  })
   
   
   observeEvent(input$submit1,{
@@ -62,8 +90,6 @@ server <- function(input, output, session) {
     global_value$chr <- input$chr
     global_value$start <- input$start
     global_value$end <- input$end
-    
-
     
   })
   

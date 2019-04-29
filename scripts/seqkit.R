@@ -16,6 +16,17 @@ set_seqkit_path <- function(){
   return( seqkit_path)
 }
 
+seqkit_get_name <- function(ref){
+  
+  
+  seqkit_path <- set_seqkit_path()
+  cmd <- sprintf("%s seq -n %s", seqkit_path, ref)
+  chroms <- system(cmd, intern = TRUE)
+  
+  return(chroms)
+  
+}
+
 
 # extract
 seqkit_extract_genomic <- function(ref, chr, start, end, ...){
