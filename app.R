@@ -163,7 +163,8 @@ server <- function(input, output, session) {
     rclipButton("clipbtn", "Copy", global_value$seq_out, icon("clipboard"))
   })
   observeEvent(input$submit,{
-    clipr::write_clip(global_value$seq_out, breaks = "\n")
+    clipr::write_clip(global_value$seq_out, breaks = "\n",
+                      allow_non_interactive = TRUE)
   })
   
   
@@ -196,22 +197,12 @@ server <- function(input, output, session) {
     
   })
   
-  # output$seqout2 <-  renderText({
-  #   
-  #   validate(
-  #     need(! is.null(global_value$ref2), "Submit FASTA first" )
-  #   )
-  # 
-  #   global_value$seq_out2 
-  #   
-  # }
-  # )
-  # Add clipboard buttons
   output$clip2 <- renderUI({
     rclipButton("clipbtn2", "Copy", global_value$seq_out2, icon("clipboard"))
   })
   observeEvent(input$submit2,{
-    clipr::write_clip(global_value$seq_out2, breaks = "\n")
+    clipr::write_clip(global_value$seq_out2, breaks = "\n", 
+                      allow_non_interactive = TRUE)
   })
   
   
